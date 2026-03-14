@@ -1,4 +1,4 @@
-"""Validated input models for Monte Carlo business simulations."""
+"""Validated input and output models for Monte Carlo business simulations."""
 
 from __future__ import annotations
 
@@ -113,27 +113,92 @@ class SimulationSummary:
     mean_profit: float
     median_profit: float
     profit_standard_deviation: float
+    minimum_profit: float
+    maximum_profit: float
     probability_of_loss: float
-    percentile_5: float
-    percentile_95: float
+    percentiles: dict[int, float]
 
     @classmethod
-    def from_profit_samples(cls, profits: list[float]) -> "SimulationSummary":
+    def from_profit_samples(
+        cls,
+        profits: list[float],
+        percentile_points: tuple[int, ...] = (5, 25, 50, 75, 95),
+    ) -> "SimulationSummary":
         if not profits:
             raise ValueError("profits must include at least one sample.")
+        if not percentile_points:
+            raise ValueError("percentile_points must include at least one percentile.")
+        if any(point < 0 or point > 100 for point in percentile_points):
+            raise ValueError("percentile_points must be between 0 and 100.")
 
         ordered = sorted(profits)
         loss_count = sum(1 for profit in ordered if profit < 0)
-        fifth_index = max(0, int(0.05 * (len(ordered) - 1)))
-        ninety_fifth_index = min(len(ordered) - 1, int(0.95 * (len(ordered) - 1)))
         avg = mean(ordered)
         variance = sum((profit - avg) ** 2 for profit in ordered) / len(ordered)
+        percentiles = {
+            point: ordered[min(len(ordered) - 1, max(0, round((point / 100) * (len(ordered) - 1))))]
+            for point in sorted(set(percentile_points))
+        }
 
         return cls(
             mean_profit=avg,
             median_profit=median(ordered),
             profit_standard_deviation=variance**0.5,
+            minimum_profit=ordered[0],
+            maximum_profit=ordered[-1],
             probability_of_loss=loss_count / len(ordered),
-            percentile_5=ordered[fifth_index],
-            percentile_95=ordered[ninety_fifth_index],
+            percentiles=percentiles,
         )
+
+    @property
+    def percentile_5(self) -> float:
+        return self.percentiles[5]
+
+    @property
+    def percentile_95(self) -> float:
+        return self.percentiles[95]
+
+
+@dataclass(slots=True, frozen=True)
+class SimulationTrial:
+    """One trial of a monthly business simulation."""
+
+    demand_units: int
+    selling_price: float
+    variable_cost_per_unit: float
+    fixed_cost: float
+    marketing_uplift_rate: float
+    revenue: float
+    total_cost: float
+    profit: float
+
+
+@dataclass(slots=True, frozen=True)
+class SimulationRunResult:
+    """Full simulation output, including trial-level detail and a summary."""
+
+    scenario_name: str
+    currency: str
+    iterations: int
+    random_seed: int | None
+    trials: list[SimulationTrial]
+    summary: SimulationSummary
+
+
+@dataclass(slots=True, frozen=True)
+class ConvergencePoint:
+    """Summary metrics for one convergence checkpoint."""
+
+    sample_size: int
+    mean_profit: float
+    median_profit: float
+    probability_of_loss: float
+
+
+@dataclass(slots=True, frozen=True)
+class ConvergenceReport:
+    """Convergence checkpoints computed across increasing sample sizes."""
+
+    scenario_name: str
+    currency: str
+    points: list[ConvergencePoint]

@@ -55,4 +55,8 @@ def test_builds_summary_metrics_from_profit_samples() -> None:
 
     assert summary.mean_profit == pytest.approx(72.0)
     assert summary.median_profit == pytest.approx(80.0)
+    assert summary.minimum_profit == pytest.approx(-20.0)
+    assert summary.maximum_profit == pytest.approx(140.0)
     assert summary.probability_of_loss == pytest.approx(0.2)
+    assert summary.percentile_5 == pytest.approx(-20.0)
+    assert summary.percentile_95 == pytest.approx(140.0)
