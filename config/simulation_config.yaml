@@ -1,0 +1,25 @@
+business_name: "Monte Claro Coffee Kiosk"
+currency: "PHP"
+simulation:
+  iterations: 1000
+  random_seed: 42
+  enable_marketing: true
+  sample_sizes_to_compare:
+    - 100
+    - 1000
+    - 5000
+    - 10000
+inputs:
+  demand_mean: 2400
+  demand_sd: 350
+  price_min: 115
+  price_mode: 120
+  price_max: 128
+  variable_cost_min: 48
+  variable_cost_mode: 52
+  variable_cost_max: 58
+  fixed_cost_mean: 95000
+  fixed_cost_sd: 8000
+  marketing_spend: 12000
+  marketing_uplift_min: 0.03
+  marketing_uplift_max: 0.10
