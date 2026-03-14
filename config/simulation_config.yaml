@@ -1,25 +1,95 @@
-business_name: "Monte Claro Coffee Kiosk"
-currency: "PHP"
-simulation:
-  iterations: 1000
-  random_seed: 42
-  enable_marketing: true
-  sample_sizes_to_compare:
-    - 100
-    - 1000
-    - 5000
-    - 10000
-inputs:
-  demand_mean: 2400
-  demand_sd: 350
-  price_min: 115
-  price_mode: 120
-  price_max: 128
-  variable_cost_min: 48
-  variable_cost_mode: 52
-  variable_cost_max: 58
-  fixed_cost_mean: 95000
-  fixed_cost_sd: 8000
-  marketing_spend: 12000
-  marketing_uplift_min: 0.03
-  marketing_uplift_max: 0.10
+default_scenario: "expected"
+
+scenarios:
+  conservative:
+    settings:
+      iterations: 1000
+      random_seed: 42
+      enable_marketing: true
+      sample_sizes_to_compare: [100, 1000, 5000, 10000]
+    assumptions:
+      business_name: "Monte Claro Coffee Kiosk"
+      currency: "PHP"
+      demand:
+        distribution: "normal"
+        mean: 2050
+        standard_deviation: 260
+      selling_price:
+        distribution: "triangular"
+        minimum: 112
+        mode: 116
+        maximum: 122
+      variable_cost:
+        distribution: "triangular"
+        minimum: 50
+        mode: 55
+        maximum: 61
+      fixed_cost:
+        distribution: "normal"
+        mean: 98000
+        standard_deviation: 6500
+      marketing_spend: 10000
+      marketing_uplift_min: 0.01
+      marketing_uplift_max: 0.04
+
+  expected:
+    settings:
+      iterations: 1000
+      random_seed: 42
+      enable_marketing: true
+      sample_sizes_to_compare: [100, 1000, 5000, 10000]
+    assumptions:
+      business_name: "Monte Claro Coffee Kiosk"
+      currency: "PHP"
+      demand:
+        distribution: "normal"
+        mean: 2400
+        standard_deviation: 350
+      selling_price:
+        distribution: "triangular"
+        minimum: 115
+        mode: 120
+        maximum: 128
+      variable_cost:
+        distribution: "triangular"
+        minimum: 48
+        mode: 52
+        maximum: 58
+      fixed_cost:
+        distribution: "normal"
+        mean: 95000
+        standard_deviation: 8000
+      marketing_spend: 12000
+      marketing_uplift_min: 0.03
+      marketing_uplift_max: 0.10
+
+  optimistic:
+    settings:
+      iterations: 1000
+      random_seed: 42
+      enable_marketing: true
+      sample_sizes_to_compare: [100, 1000, 5000, 10000]
+    assumptions:
+      business_name: "Monte Claro Coffee Kiosk"
+      currency: "PHP"
+      demand:
+        distribution: "normal"
+        mean: 2850
+        standard_deviation: 420
+      selling_price:
+        distribution: "triangular"
+        minimum: 118
+        mode: 124
+        maximum: 133
+      variable_cost:
+        distribution: "triangular"
+        minimum: 46
+        mode: 50
+        maximum: 56
+      fixed_cost:
+        distribution: "normal"
+        mean: 93000
+        standard_deviation: 7000
+      marketing_spend: 15000
+      marketing_uplift_min: 0.05
+      marketing_uplift_max: 0.14
